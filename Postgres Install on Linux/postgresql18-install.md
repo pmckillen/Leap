@@ -8,23 +8,17 @@ These steps install PostgreSQL 18 (the official PostgreSQL Global Development Gr
 - Logged in as `ec2-user` (or another user with sudo access)
 - Internet access from the instance (default for most VPC setups)
 
-## Step 1: Add the PostgreSQL YUM repository
+## Step 1: Add the PostgreSQL repository
 
 ```bash
-sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+sudo bash -c 'printf "[pgdg18]\nname=PostgreSQL 18 for RHEL 9 - x86_64\nbaseurl=https://download.postgresql.org/pub/repos/yum/18/redhat/rhel-9-x86_64\nenabled=1\ngpgcheck=0\n" > /etc/yum.repos.d/pgdg18.repo'
 ```
 
-This installs a repository definition pointing at the RHEL 9 build of PostgreSQL, which is compatible with Amazon Linux 2023.
+This writes a repository definition file pointing at the RHEL 9 build of PostgreSQL 18, which is compatible with Amazon Linux 2023.
 
-## Step 2: Fix the repository path
+Note: the official PostgreSQL installer package (`pgdg-redhat-repo-latest.noarch.rpm`) will not install on Amazon Linux 2023, because it checks for a file called `/etc/redhat-release` that only exists on genuine RHEL systems. Writing the repository file directly, as above, avoids that check entirely.
 
-```bash
-sudo sed -i 's/$releasever/9/g' /etc/yum.repos.d/pgdg-redhat-all.repo
-```
-
-Amazon Linux 2023 does not set `$releasever` to `9` the way RHEL 9 does, so the repository file has to be told explicitly which release to use. Without this step, the next command will fail with a "repository not found" style error.
-
-## Step 3: Install PostgreSQL 18
+## Step 2: Install PostgreSQL 18
 
 ```bash
 sudo dnf install -y postgresql18-server
@@ -32,7 +26,7 @@ sudo dnf install -y postgresql18-server
 
 This installs both the server and the client tools (`psql` and friends come along automatically as a dependency).
 
-## Step 4: Initialize the database
+## Step 3: Initialize the database
 
 ```bash
 sudo /usr/pgsql-18/bin/postgresql-18-setup initdb
@@ -40,7 +34,7 @@ sudo /usr/pgsql-18/bin/postgresql-18-setup initdb
 
 This sets up the initial data directory. It only needs to be run once.
 
-## Step 5: Start PostgreSQL and enable it on boot
+## Step 4: Start PostgreSQL and enable it on boot
 
 ```bash
 sudo systemctl enable --now postgresql-18
@@ -73,8 +67,17 @@ source ~/.bash_profile
 
 ## Troubleshooting
 
-**"Repository not found" or similar error on Step 3**
-Re-check Step 2 ran without errors. This is almost always caused by the `$releasever` substitution not having happened.
+**"Problem: conflicting requests... nothing provides /etc/redhat-release"**
+This means Step 1 was done using the old RPM-based method instead of the `printf` command above. Use the `printf` command in Step 1 instead; it does not have this problem.
+
+**"Repository not found" or similar error on Step 2**
+Double-check the repository file was created correctly:
+
+```bash
+cat /etc/yum.repos.d/pgdg18.repo
+```
+
+It should show five lines starting with `[pgdg18]`. If the file is missing or empty, re-run Step 1.
 
 **Checking if PostgreSQL is already installed before starting**
 
