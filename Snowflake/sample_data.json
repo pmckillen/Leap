@@ -1,0 +1,90 @@
+[
+  {
+    "departmentId": "DEPT-001",
+    "name": "Engineering",
+    "costCenter": "CC-4410",
+    "people": [
+      {
+        "employeeId": "EMP-1001",
+        "firstName": "Ava",
+        "lastName": "Nolan",
+        "title": "Senior Software Engineer",
+        "addresses": [
+          {
+            "type": "home",
+            "line1": "12 Birch Grove",
+            "city": "Leeds",
+            "postcode": "LS1 4AB",
+            "country": "UK"
+          },
+          {
+            "type": "work",
+            "line1": "3 Riverside Way",
+            "city": "Leeds",
+            "postcode": "LS2 7GH",
+            "country": "UK"
+          }
+        ]
+      },
+      {
+        "employeeId": "EMP-1002",
+        "firstName": "Marcus",
+        "lastName": "Webb",
+        "title": "QA Engineer",
+        "addresses": [
+          {
+            "type": "home",
+            "line1": "45 Oakfield Road",
+            "city": "Manchester",
+            "postcode": "M14 5RT",
+            "country": "UK"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "departmentId": "DEPT-002",
+    "name": "Finance",
+    "costCenter": "CC-2205",
+    "people": [
+      {
+        "employeeId": "EMP-2001",
+        "firstName": "Priya",
+        "lastName": "Chandra",
+        "title": "Financial Analyst",
+        "addresses": [
+          {
+            "type": "home",
+            "line1": "8 Meadow Lane",
+            "city": "Bristol",
+            "postcode": "BS3 2QW",
+            "country": "UK"
+          },
+          {
+            "type": "billing",
+            "line1": "8 Meadow Lane",
+            "city": "Bristol",
+            "postcode": "BS3 2QW",
+            "country": "UK"
+          }
+        ]
+      },
+      {
+        "employeeId": "EMP-2002",
+        "firstName": "Tom",
+        "lastName": "Fischer",
+        "title": "Finance Manager",
+        "addresses": [
+          {
+            "type": "home",
+            "line1": "21 Elm Court",
+            "city": "Bristol",
+            "postcode": "BS8 1LN",
+            "country": "UK"
+          }
+        ]
+      }
+    ]
+  }
+]

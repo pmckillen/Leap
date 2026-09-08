@@ -1,0 +1,23 @@
+{
+  "departments": {
+    "departmentId": ["DEPT-001", "DEPT-002"],
+    "name": ["Engineering", "Finance"],
+    "costCenter": ["CC-4410", "CC-2205"]
+  },
+  "people": {
+    "employeeId": ["EMP-1001", "EMP-1002", "EMP-2001", "EMP-2002"],
+    "departmentId": ["DEPT-001", "DEPT-001", "DEPT-002", "DEPT-002"],
+    "firstName": ["Ava", "Marcus", "Priya", "Tom"],
+    "lastName": ["Nolan", "Webb", "Chandra", "Fischer"],
+    "title": ["Senior Software Engineer", "QA Engineer", "Financial Analyst", "Finance Manager"]
+  },
+  "addresses": {
+    "addressId": ["ADDR-1", "ADDR-2", "ADDR-3", "ADDR-4", "ADDR-5", "ADDR-6"],
+    "employeeId": ["EMP-1001", "EMP-1001", "EMP-1002", "EMP-2001", "EMP-2001", "EMP-2002"],
+    "type": ["home", "work", "home", "home", "billing", "home"],
+    "line1": ["12 Birch Grove", "3 Riverside Way", "45 Oakfield Road", "8 Meadow Lane", "8 Meadow Lane", "21 Elm Court"],
+    "city": ["Leeds", "Leeds", "Manchester", "Bristol", "Bristol", "Bristol"],
+    "postcode": ["LS1 4AB", "LS2 7GH", "M14 5RT", "BS3 2QW", "BS3 2QW", "BS8 1LN"],
+    "country": ["UK", "UK", "UK", "UK", "UK", "UK"]
+  }
+}

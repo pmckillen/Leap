@@ -1,0 +1,21 @@
+--- Addresses
+address_id,employee_id,type,line1,city,postcode,country
+ADDR-1,EMP-1001,home,12 Birch Grove,Leeds,LS1 4AB,UK
+ADDR-2,EMP-1001,work,3 Riverside Way,Leeds,LS2 7GH,UK
+ADDR-3,EMP-1002,home,45 Oakfield Road,Manchester,M14 5RT,UK
+ADDR-4,EMP-2001,home,8 Meadow Lane,Bristol,BS3 2QW,UK
+ADDR-5,EMP-2001,billing,8 Meadow Lane,Bristol,BS3 2QW,UK
+ADDR-6,EMP-2002,home,21 Elm Court,Bristol,BS8 1LN,UK
+
+--- Employees
+employee_id,department_id,first_name,last_name,title
+EMP-1001,DEPT-001,Ava,Nolan,Senior Software Engineer
+EMP-1002,DEPT-001,Marcus,Webb,QA Engineer
+EMP-2001,DEPT-002,Priya,Chandra,Financial Analyst
+EMP-2002,DEPT-002,Tom,Fischer,Finance Manager
+
+
+--- Departments
+department_id,name,cost_center
+DEPT-001,Engineering,CC-4410
+DEPT-002,Finance,CC-2205
