@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in | Fund Manager</title>
+<style>
+:root{--bg:#F2F2EF;--card:#FFFFFF;--line:#C9C9C5;--line2:#E4E4E0;--ink:#1F1F1E;--muted:#5C5C58;--fill:#EDEDEA;--bar:#6E6E69;--bar2:#A3A39E;--dark:#2B2B29;--pos:#1F5F3A;--neg:#8A2B1E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;font-size:15px}
+a{color:#3F3F3C}a:hover{color:var(--ink)}
+.mono,.num{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+header#app-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 32px;padding:12px 32px;background:var(--card);border-bottom:1px solid var(--line)}
+.logo{width:120px;height:36px;border:1px dashed #8A8A85;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+header nav{display:flex;gap:4px;flex-grow:1;flex-wrap:wrap}
+header nav a{padding:12px 16px;text-decoration:none;border-bottom:2px solid transparent}
+header nav a[aria-current]{font-weight:600;border-bottom-color:var(--ink);color:var(--ink)}
+.user{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#DADAD6;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.who{display:flex;flex-direction:column;font-size:13px}.who small{color:var(--muted)}
+.user a{padding:12px 8px;font-size:14px}
+main{max-width:1600px;margin:0 auto;padding:24px 32px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px}
+.card h2{margin:0 0 14px;font-size:16px;font-weight:600}
+.crumb{font-size:13px;color:var(--muted)}
+h1{margin:4px 0;font-size:28px;font-weight:600}
+.tag{font-size:12px;padding:2px 9px;border-radius:10px;background:var(--line2);white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.tile .l{font-size:13px;color:var(--muted)}.tile .v{font-size:21px;font-weight:600}.tile .s{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.bar-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.bar-row .t{display:flex;justify-content:space-between;font-size:14px;gap:8px}
+.track{height:10px;background:var(--fill);border-radius:2px}.fillbar{height:10px;background:var(--bar);border-radius:2px}
+.scroll{overflow-x:auto;position:relative}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+th.num,td.num{text-align:right}
+tfoot td{font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.btn{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;text-decoration:none;font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.btn.primary{background:var(--dark);color:#fff;border-color:var(--dark);font-weight:600}
+.pill{min-height:36px;padding:6px 12px;font:inherit;font-size:13px;border-radius:18px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--dark);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--muted);border-radius:4px;overflow:hidden}
+.seg button{min-height:44px;min-width:52px;padding:0 12px;font:inherit;font-size:14px;cursor:pointer;border:0;border-right:1px solid var(--line);background:var(--card);color:var(--ink)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff}
+select,input[type=text],input[type=password],input[type=search],input[type=number]{height:44px;padding:0 12px;font:inherit;font-size:14px;border:1px solid #9A9A95;border-radius:4px;background:#fff;color:var(--ink)}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:640px){main{padding:16px}header#app-header{padding:10px 16px}}
+td:first-child{white-space:normal;min-width:170px}
+.grid2>*{min-width:0}
+
+.wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px 16px}
+.login{width:100%;max-width:420px;display:flex;flex-direction:column;gap:22px;padding:40px}
+.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:14px;font-weight:500}
+.err{font-size:14px;padding:10px 12px;border:1px solid var(--neg);color:var(--neg);background:#F7EDEB;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form class="card login" id="loginForm" novalidate>
+    <div class="logo" style="width:100%;height:48px">[APP LOGO]</div>
+    <div>
+      <h1 style="font-size:26px">Sign in</h1>
+      <div class="crumb">Fund manager access</div>
+    </div>
+    <div class="field">
+      <label for="uname">Username</label>
+      <input id="uname" type="text" autocomplete="username" placeholder="Enter username">
+    </div>
+    <div class="field">
+      <label for="pwd">Password</label>
+      <input id="pwd" type="password" autocomplete="current-password" placeholder="Enter password">
+    </div>
+    <div class="err" id="err" role="alert" hidden>Please enter your username and password.</div>
+    <button type="submit" class="btn primary" style="height:48px;font-size:15px">Sign in</button>
+    <p class="note" style="margin:0">Demo: any username and password will sign you in.</p>
+  </form>
+  <p class="note">Authorised users only. Activity is logged.</p>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const u = document.getElementById('uname').value.trim();
+  const p = document.getElementById('pwd').value;
+  const err = document.getElementById('err');
+  if (!u || !p) { err.hidden = false; return; }
+  try { sessionStorage.setItem('fm_user', u); } catch (ex) {}
+  location.href = 'portfolios.html';
+});
+</script>
+</body>
+</html>

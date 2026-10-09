@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analytics | Fund Manager</title>
+<style>
+:root{--bg:#F2F2EF;--card:#FFFFFF;--line:#C9C9C5;--line2:#E4E4E0;--ink:#1F1F1E;--muted:#5C5C58;--fill:#EDEDEA;--bar:#6E6E69;--bar2:#A3A39E;--dark:#2B2B29;--pos:#1F5F3A;--neg:#8A2B1E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;font-size:15px}
+a{color:#3F3F3C}a:hover{color:var(--ink)}
+.mono,.num{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+header#app-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 32px;padding:12px 32px;background:var(--card);border-bottom:1px solid var(--line)}
+.logo{width:120px;height:36px;border:1px dashed #8A8A85;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+header nav{display:flex;gap:4px;flex-grow:1;flex-wrap:wrap}
+header nav a{padding:12px 16px;text-decoration:none;border-bottom:2px solid transparent}
+header nav a[aria-current]{font-weight:600;border-bottom-color:var(--ink);color:var(--ink)}
+.user{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#DADAD6;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.who{display:flex;flex-direction:column;font-size:13px}.who small{color:var(--muted)}
+.user a{padding:12px 8px;font-size:14px}
+main{max-width:1600px;margin:0 auto;padding:24px 32px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px}
+.card h2{margin:0 0 14px;font-size:16px;font-weight:600}
+.crumb{font-size:13px;color:var(--muted)}
+h1{margin:4px 0;font-size:28px;font-weight:600}
+.tag{font-size:12px;padding:2px 9px;border-radius:10px;background:var(--line2);white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.tile .l{font-size:13px;color:var(--muted)}.tile .v{font-size:21px;font-weight:600}.tile .s{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.bar-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.bar-row .t{display:flex;justify-content:space-between;font-size:14px;gap:8px}
+.track{height:10px;background:var(--fill);border-radius:2px}.fillbar{height:10px;background:var(--bar);border-radius:2px}
+.scroll{overflow-x:auto;position:relative}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+th.num,td.num{text-align:right}
+tfoot td{font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.btn{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;text-decoration:none;font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.btn.primary{background:var(--dark);color:#fff;border-color:var(--dark);font-weight:600}
+.pill{min-height:36px;padding:6px 12px;font:inherit;font-size:13px;border-radius:18px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--dark);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--muted);border-radius:4px;overflow:hidden}
+.seg button{min-height:44px;min-width:52px;padding:0 12px;font:inherit;font-size:14px;cursor:pointer;border:0;border-right:1px solid var(--line);background:var(--card);color:var(--ink)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff}
+select,input[type=text],input[type=password],input[type=search],input[type=number]{height:44px;padding:0 12px;font:inherit;font-size:14px;border:1px solid #9A9A95;border-radius:4px;background:#fff;color:var(--ink)}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:640px){main{padding:16px}header#app-header{padding:10px 16px}}
+td:first-child{white-space:normal;min-width:170px}
+.grid2>*{min-width:0}
+
+.titlebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:4px}.ctl label,.ctl span{font-size:13px;color:var(--muted)}
+.legend{display:flex;gap:20px;flex-wrap:wrap;font-size:13px;margin-bottom:8px}
+.legend i{display:inline-block;width:24px;vertical-align:middle;margin-right:6px}
+svg text{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;fill:#5C5C58}
+</style>
+</head>
+<body>
+<header id="app-header"></header>
+<main class="stack">
+  <div class="titlebar">
+    <div>
+      <div class="crumb"><a href="portfolios.html" id="backLink">Portfolios</a> / Analytics</div>
+      <h1>Analytics</h1>
+      <div class="crumb" id="sub"></div>
+    </div>
+    <div class="controls">
+      <div class="ctl"><label for="psel">Portfolio</label><select id="psel"></select></div>
+      <div class="ctl"><span id="perLbl">Period</span><div class="seg" role="group" aria-labelledby="perLbl" id="periods"></div></div>
+    </div>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div class="card">
+    <h2 id="perfTitle"></h2>
+    <div class="legend" id="perfLegend"></div>
+    <div id="perfChart"></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h2>Drawdown from previous peak</h2><div id="ddChart"></div></div>
+    <div class="card"><h2>Value at Risk: distribution of daily returns</h2><div id="varChart"></div><div id="varText" class="legend" style="margin-top:10px"></div></div>
+  </div>
+  <div class="card">
+    <h2 id="sumTitle"></h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Measure</th><th class="num">Portfolio</th><th class="num">Benchmark</th><th class="num">Difference</th></tr></thead>
+      <tbody id="sumBody"></tbody>
+    </table></div>
+    <p class="note">Calculated in the browser from a simulated daily return history (sample data). Sharpe uses a <span id="rfTxt"></span> annual risk-free rate and 252 trading days. VaR is historical simulation, 1-day horizon, scaled to current portfolio value. Short periods have few observations, so VaR there is indicative only.</p>
+  </div>
+</main>
+<script>
+const AS_OF = '2026-10-09';
+const RISK_FREE = 0.04;
+
+const PORTFOLIOS = [
+  {
+    id: 'cons', name: 'Conservative Income Portfolio', risk: 'Low',
+    benchmark: 'US Aggregate Bond Index (sample)',
+    cash: 62000, realisedYtd: 8420,
+    sim: { mu: 0.00022, sigma: 0.0042, bmu: 0.00018, bsigma: 0.0038, rho: 0.85, seed: 14 },
+    holdings: [
+      { name: 'US Treasury 4.25% 15-Nov-2034', ticker: 'T 4.25 11/34', type: 'Bond', qty: 300000, cost: 98.10, price: 99.40, prev: 99.30 },
+      { name: 'US Treasury 3.875% 30-Jun-2029', ticker: 'T 3.875 06/29', type: 'Bond', qty: 150000, cost: 99.20, price: 99.85, prev: 99.90 },
+      { name: 'Apple Inc 3.35% 08-Aug-2032', ticker: 'AAPL 3.35 08/32', type: 'Bond', qty: 80000, cost: 94.50, price: 95.60, prev: 95.55 },
+      { name: 'Microsoft Corp 2.40% 08-Aug-2030', ticker: 'MSFT 2.4 08/30', type: 'Bond', qty: 70000, cost: 93.00, price: 94.20, prev: 94.10 },
+      { name: 'iShares Core US Aggregate Bond ETF', ticker: 'AGG', type: 'ETF', qty: 900, cost: 97.20, price: 98.40, prev: 98.30 },
+      { name: 'Vanguard Short-Term Bond ETF', ticker: 'BSV', type: 'ETF', qty: 1000, cost: 76.80, price: 78.10, prev: 78.05 },
+      { name: 'Vanguard Dividend Appreciation ETF', ticker: 'VIG', type: 'ETF', qty: 250, cost: 180.00, price: 201.50, prev: 200.10 },
+      { name: 'Johnson & Johnson', ticker: 'JNJ', type: 'Stock', qty: 300, cost: 152.00, price: 158.40, prev: 157.90 },
+      { name: 'Procter & Gamble', ticker: 'PG', type: 'Stock', qty: 280, cost: 158.00, price: 166.20, prev: 166.80 },
+      { name: 'Coca-Cola Co', ticker: 'KO', type: 'Stock', qty: 600, cost: 61.50, price: 67.30, prev: 67.10 }
+    ],
+    trades: [
+      { date: '2026-10-07', side: 'Buy', ticker: 'AGG', type: 'ETF', qty: 200, price: 98.20, status: 'Pending settlement' },
+      { date: '2026-10-02', side: 'Sell', ticker: 'KO', type: 'Stock', qty: 150, price: 66.90, status: 'Settled' },
+      { date: '2026-09-24', side: 'Buy', ticker: 'T 4.25 11/34', type: 'Bond', qty: 100000, price: 99.05, status: 'Settled' }
+    ]
+  },
+  {
+    id: 'bal', name: 'Balanced Portfolio', risk: 'Medium',
+    benchmark: '60/40 Equity-Bond Blend (sample)',
+    cash: 60000, realisedYtd: 21350,
+    sim: { mu: 0.00038, sigma: 0.0082, bmu: 0.00032, bsigma: 0.0074, rho: 0.9, seed: 160 },
+    holdings: [
+      { name: 'Vanguard S&P 500 ETF', ticker: 'VOO', type: 'ETF', qty: 400, cost: 430.00, price: 505.20, prev: 502.80 },
+      { name: 'iShares Core MSCI EAFE ETF', ticker: 'IEFA', type: 'ETF', qty: 1200, cost: 68.00, price: 74.60, prev: 74.90 },
+      { name: 'iShares Core US Aggregate Bond ETF', ticker: 'AGG', type: 'ETF', qty: 1000, cost: 97.00, price: 98.40, prev: 98.30 },
+      { name: 'US Treasury 4.00% 15-Feb-2031', ticker: 'T 4.0 02/31', type: 'Bond', qty: 150000, cost: 98.50, price: 99.10, prev: 99.15 },
+      { name: 'JPMorgan Chase 4.50% 22-Apr-2033', ticker: 'JPM 4.5 04/33', type: 'Bond', qty: 80000, cost: 97.00, price: 98.30, prev: 98.20 },
+      { name: 'Microsoft Corp', ticker: 'MSFT', type: 'Stock', qty: 180, cost: 330.00, price: 415.30, prev: 411.90 },
+      { name: 'Apple Inc', ticker: 'AAPL', type: 'Stock', qty: 320, cost: 170.00, price: 226.40, prev: 228.10 },
+      { name: 'JPMorgan Chase & Co', ticker: 'JPM', type: 'Stock', qty: 300, cost: 185.00, price: 221.70, prev: 220.40 },
+      { name: 'UnitedHealth Group', ticker: 'UNH', type: 'Stock', qty: 100, cost: 520.00, price: 489.20, prev: 492.00 },
+      { name: 'Exxon Mobil Corp', ticker: 'XOM', type: 'Stock', qty: 500, cost: 112.00, price: 118.60, prev: 117.90 }
+    ],
+    trades: [
+      { date: '2026-10-08', side: 'Buy', ticker: 'VOO', type: 'ETF', qty: 50, price: 503.10, status: 'Pending settlement' },
+      { date: '2026-10-03', side: 'Sell', ticker: 'UNH', type: 'Stock', qty: 40, price: 495.60, status: 'Settled' },
+      { date: '2026-09-26', side: 'Buy', ticker: 'JPM 4.5 04/33', type: 'Bond', qty: 30000, price: 98.00, status: 'Settled' }
+    ]
+  },
+  {
+    id: 'grow', name: 'Growth Portfolio', risk: 'High',
+    benchmark: 'Nasdaq-100 Index (sample)',
+    cash: 45000, realisedYtd: 46900,
+    sim: { mu: 0.0006, sigma: 0.0158, bmu: 0.0005, bsigma: 0.0135, rho: 0.88, seed: 193 },
+    holdings: [
+      { name: 'NVIDIA Corp', ticker: 'NVDA', type: 'Stock', qty: 1100, cost: 62.00, price: 121.40, prev: 118.70 },
+      { name: 'Microsoft Corp', ticker: 'MSFT', type: 'Stock', qty: 250, cost: 360.00, price: 415.30, prev: 411.90 },
+      { name: 'Amazon.com Inc', ticker: 'AMZN', type: 'Stock', qty: 500, cost: 145.00, price: 186.50, prev: 184.20 },
+      { name: 'Alphabet Inc Class A', ticker: 'GOOGL', type: 'Stock', qty: 520, cost: 140.00, price: 163.80, prev: 165.10 },
+      { name: 'Meta Platforms Inc', ticker: 'META', type: 'Stock', qty: 160, cost: 410.00, price: 567.30, prev: 560.80 },
+      { name: 'Tesla Inc', ticker: 'TSLA', type: 'Stock', qty: 300, cost: 260.00, price: 238.10, prev: 244.60 },
+      { name: 'Invesco QQQ Trust', ticker: 'QQQ', type: 'ETF', qty: 220, cost: 400.00, price: 487.60, prev: 484.10 },
+      { name: 'ARK Innovation ETF', ticker: 'ARKK', type: 'ETF', qty: 1500, cost: 58.00, price: 49.20, prev: 50.10 },
+      { name: 'Vanguard FTSE Emerging Markets ETF', ticker: 'VWO', type: 'ETF', qty: 2000, cost: 42.00, price: 46.30, prev: 46.50 },
+      { name: 'Ford Motor Credit 6.95% 10-Jun-2028', ticker: 'F 6.95 06/28', type: 'Bond', qty: 100000, cost: 99.50, price: 102.40, prev: 102.30 }
+    ],
+    trades: [
+      { date: '2026-10-08', side: 'Buy', ticker: 'NVDA', type: 'Stock', qty: 200, price: 119.80, status: 'Pending settlement' },
+      { date: '2026-10-06', side: 'Sell', ticker: 'TSLA', type: 'Stock', qty: 100, price: 246.20, status: 'Settled' },
+      { date: '2026-09-30', side: 'Buy', ticker: 'VWO', type: 'ETF', qty: 500, price: 46.10, status: 'Settled' }
+    ]
+  }
+];
+
+const usd = (x, dp = 0) => (x < 0 ? '-' : '') + '$' + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const sUsd = (x, dp = 0) => (x > 0 ? '+' : '') + usd(x, dp);
+const pct = (x, dp = 2, sign = false) => (sign && x > 0 ? '+' : '') + (x * 100).toFixed(dp) + '%';
+const num = (x, dp = 0) => x.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const cls = (x) => (x > 0 ? 'pos' : x < 0 ? 'neg' : '');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const unitValue = (type, qty, px) => (type === 'Bond' ? qty * px / 100 : qty * px);
+
+function summarise(p) {
+  const rows = p.holdings.map((h) => {
+    const mv = unitValue(h.type, h.qty, h.price);
+    const cv = unitValue(h.type, h.qty, h.cost);
+    const pv = unitValue(h.type, h.qty, h.prev);
+    return { ...h, mv, cv, pnl: mv - cv, pnlPct: (mv - cv) / cv, day: mv - pv, dayPct: (h.price - h.prev) / h.prev };
+  });
+  const invested = rows.reduce((a, r) => a + r.mv, 0);
+  const total = invested + p.cash;
+  rows.forEach((r) => { r.weight = r.mv / total; });
+  const unreal = rows.reduce((a, r) => a + r.pnl, 0);
+  const day = rows.reduce((a, r) => a + r.day, 0);
+  const byType = {};
+  ['Stock', 'Bond', 'ETF'].forEach((t) => {
+    const rs = rows.filter((r) => r.type === t);
+    byType[t] = { mv: rs.reduce((a, r) => a + r.mv, 0), pnl: rs.reduce((a, r) => a + r.pnl, 0), n: rs.length };
+  });
+  byType.Cash = { mv: p.cash, pnl: 0, n: 0 };
+  return { rows, invested, total, unreal, day, dayPct: day / (total - day), byType };
+}
+
+function getParam(name) {
+  return new URLSearchParams(location.search).get(name);
+}
+
+function findPortfolio() {
+  const id = getParam('p');
+  return PORTFOLIOS.find((p) => p.id === id) || PORTFOLIOS[0];
+}
+
+function renderHeader(active, pid) {
+  const q = pid ? '?p=' + pid : '';
+  const user = sessionUser();
+  document.getElementById('app-header').innerHTML = `
+    <div class="logo">[APP LOGO]</div>
+    <nav aria-label="Main">
+      <a href="portfolios.html${q}" ${active === 'portfolios' ? 'aria-current="page"' : ''}>Portfolios</a>
+      <a href="analytics.html${q}" ${active === 'analytics' ? 'aria-current="page"' : ''}>Analytics</a>
+    </nav>
+    <div class="user">
+      <div class="avatar" aria-hidden="true">${esc(user.slice(0, 2).toUpperCase())}</div>
+      <div class="who"><span>${esc(user)}</span><small>Fund Manager</small></div>
+      <a href="login.html" id="logout">Log out</a>
+    </div>`;
+  document.getElementById('logout').addEventListener('click', () => {
+    try { sessionStorage.removeItem('fm_user'); } catch (e) {}
+  });
+}
+
+function sessionUser() {
+  try { return sessionStorage.getItem('fm_user') || 'Demo user'; } catch (e) { return 'Demo user'; }
+}
+
+const PERIODS = [['1M', 21], ['3M', 63], ['6M', 126], ['YTD', null], ['1Y', 252]];
+let current = findPortfolio();
+let period = '1Y';
+
+function mulberry32(a) {
+  return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+}
+
+function businessDates(end, n) {
+  const out = []; const d = new Date(end + 'T00:00:00Z');
+  while (out.length < n + 1) { const w = d.getUTCDay(); if (w !== 0 && w !== 6) out.unshift(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() - 1); }
+  return out;
+}
+
+const HISTORY = {};
+function getHistory(p) {
+  if (HISTORY[p.id]) return HISTORY[p.id];
+  const N = 252, s = p.sim, rnd = mulberry32(s.seed);
+  const gauss = () => { let u = 0, v = 0; while (u === 0) u = rnd(); while (v === 0) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const fr = [], br = [];
+  for (let i = 0; i < N; i++) {
+    const z = gauss(), e = gauss();
+    br.push(s.bmu + s.bsigma * z);
+    fr.push(s.mu + s.sigma * (s.rho * z + Math.sqrt(1 - s.rho * s.rho) * e));
+  }
+  return (HISTORY[p.id] = { dates: businessDates(AS_OF, N), fr, br });
+}
+
+const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
+const sd = (a) => { const m = mean(a); return Math.sqrt(a.reduce((x, y) => x + (y - m) ** 2, 0) / (a.length - 1)); };
+const cum = (r) => { const v = [1]; r.forEach((x) => v.push(v[v.length - 1] * (1 + x))); return v; };
+const quantile = (a, q) => { const s = [...a].sort((x, y) => x - y); const i = (s.length - 1) * q, lo = Math.floor(i), hi = Math.ceil(i); return s[lo] + (s[hi] - s[lo]) * (i - lo); };
+const drawdowns = (v) => { let pk = v[0]; return v.map((x) => { pk = Math.max(pk, x); return x / pk - 1; }); };
+
+function metrics(r, rb) {
+  const v = cum(r), annRet = mean(r) * 252, vol = sd(r) * Math.sqrt(252);
+  const cov = mean(r.map((x, i) => (x - mean(r)) * (rb[i] - mean(rb)))) * r.length / (r.length - 1);
+  return {
+    ret: v[v.length - 1] - 1, vol, sharpe: (annRet - RISK_FREE) / vol,
+    var95: -quantile(r, 0.05), var99: -quantile(r, 0.01),
+    mdd: Math.min(...drawdowns(v)), beta: cov / (sd(rb) ** 2),
+    te: sd(r.map((x, i) => x - rb[i])) * Math.sqrt(252)
+  };
+}
+
+function periodLength(h) {
+  const def = PERIODS.find(([k]) => k === period)[1];
+  if (def) return def;
+  const y = AS_OF.slice(0, 4) + '-01-01';
+  return h.dates.filter((d) => d >= y).length - 1;
+}
+
+function lineChart(series, dates, opts) {
+  const W = opts.w || 900, H = opts.h || 300, L = 64, R = 16, T = 12, B = 30;
+  const all = series.flatMap((s) => s.v);
+  let lo = Math.min(...all), hi = Math.max(...all);
+  if (opts.zeroTop) hi = 0;
+  if (hi === lo) { hi += 0.01; lo -= 0.01; }
+  const pad = (hi - lo) * 0.06; if (!opts.zeroTop) hi += pad; lo -= pad;
+  const n = series[0].v.length;
+  const x = (i) => L + i / (n - 1) * (W - L - R);
+  const y = (v) => T + (hi - v) / (hi - lo) * (H - T - B);
+  let g = '';
+  for (let k = 0; k <= 4; k++) {
+    const v = lo + (hi - lo) * k / 4, yy = y(v);
+    g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="#E4E4E0"/><text x="${L - 8}" y="${yy + 4}" text-anchor="end">${pct(v, 1, !opts.zeroTop)}</text>`;
+  }
+  if (!opts.zeroTop && lo < 0 && hi > 0) g += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="#9A9A95"/>`;
+  [0, Math.floor((n - 1) / 2), n - 1].forEach((i, j) => g += `<text x="${x(i)}" y="${H - 8}" text-anchor="${['start', 'middle', 'end'][j]}">${dates[i]}</text>`);
+  const lines = series.map((s) => {
+    const pts = s.v.map((v, i) => x(i).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+    if (s.area) return `<polygon points="${x(0)},${y(0)} ${pts} ${x(n - 1)},${y(0)}" fill="#BDBDB8" stroke="#5C5C58" stroke-width="1.5"/>`;
+    return `<polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="${s.w || 2}" ${s.dash ? 'stroke-dasharray="6 5"' : ''}/>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${opts.label}">${g}${lines}</svg>`;
+}
+
+function histogram(r, var95) {
+  const W = 560, H = 240, L = 16, R = 16, T = 10, B = 28, bins = 25;
+  const lo = Math.min(...r), hi = Math.max(...r), bw = (hi - lo) / bins || 1e-6;
+  const counts = Array(bins).fill(0);
+  r.forEach((v) => counts[Math.min(bins - 1, Math.floor((v - lo) / bw))]++);
+  const mx = Math.max(...counts), cw = (W - L - R) / bins;
+  const xOf = (v) => L + (v - lo) / (hi - lo) * (W - L - R);
+  let s = counts.map((c, i) => {
+    const h = c / mx * (H - T - B), left = lo + i * bw;
+    return `<rect x="${(L + i * cw + 1).toFixed(1)}" y="${(H - B - h).toFixed(1)}" width="${(cw - 2).toFixed(1)}" height="${h.toFixed(1)}" fill="${left + bw <= -var95 ? '#2B2B29' : '#BDBDB8'}"/>`;
+  }).join('');
+  const vx = xOf(-var95);
+  s += `<line x1="${vx}" x2="${vx}" y1="${T}" y2="${H - B}" stroke="#1F1F1E" stroke-dasharray="5 4" stroke-width="2"/><text x="${vx + 6}" y="${T + 12}">95% VaR ${pct(-var95, 2)}</text>`;
+  s += `<line x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}" stroke="#5C5C58"/>`;
+  s += `<text x="${L}" y="${H - 8}">${pct(lo, 1)}</text><text x="${W - R}" y="${H - 8}" text-anchor="end">${pct(hi, 1, true)}</text>`;
+  if (lo < 0 && hi > 0) s += `<text x="${xOf(0)}" y="${H - 8}" text-anchor="middle">0%</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Histogram of daily returns with 95% VaR marked">${s}</svg>`;
+}
+
+function render() {
+  renderHeader('analytics', current.id);
+  document.getElementById('backLink').href = 'portfolios.html?p=' + current.id;
+  document.getElementById('psel').innerHTML = PORTFOLIOS.map((p) => `<option value="${p.id}" ${p.id === current.id ? 'selected' : ''}>${esc(p.name)} (${p.risk} risk)</option>`).join('');
+  document.getElementById('periods').innerHTML = PERIODS.map(([k]) => `<button type="button" data-k="${k}" aria-pressed="${k === period}">${k}</button>`).join('');
+  document.getElementById('rfTxt').textContent = pct(RISK_FREE, 1);
+
+  const s = summarise(current), h = getHistory(current), n = periodLength(h);
+  const r = h.fr.slice(-n), rb = h.br.slice(-n), dates = h.dates.slice(-(n + 1));
+  const m = metrics(r, rb), mb = metrics(rb, rb);
+  const vf = cum(r), vb = cum(rb);
+
+  document.getElementById('sub').textContent = `${current.name} · ${current.risk} risk · Benchmark ${current.benchmark} · Value ${usd(s.total)}`;
+  document.getElementById('tiles').innerHTML = `
+    <div class="tile"><span class="l">Return vs benchmark (${period})</span><span class="v mono ${cls(m.ret - mb.ret)}">${pct(m.ret - mb.ret, 2, true)}</span><span class="s">Portfolio ${pct(m.ret, 2, true)} / Benchmark ${pct(mb.ret, 2, true)}</span></div>
+    <div class="tile"><span class="l">Sharpe ratio</span><span class="v mono">${m.sharpe.toFixed(2)}</span><span class="s">Benchmark ${mb.sharpe.toFixed(2)} · annualised</span></div>
+    <div class="tile"><span class="l">VaR 95%, 1-day</span><span class="v mono">${usd(m.var95 * s.total)}</span><span class="s">${pct(m.var95, 2)} of portfolio value</span></div>
+    <div class="tile"><span class="l">Max drawdown</span><span class="v mono neg">${pct(m.mdd, 2)}</span><span class="s">Benchmark ${pct(mb.mdd, 2)}</span></div>`;
+
+  document.getElementById('perfTitle').textContent = `Performance vs benchmark: cumulative return, ${period} (${n} trading days)`;
+  document.getElementById('perfLegend').innerHTML = `<span><i style="border-top:3px solid #2B2B29"></i>Portfolio ${pct(m.ret, 2, true)}</span><span><i style="border-top:2px dashed #8A8A85"></i>Benchmark ${pct(mb.ret, 2, true)}</span>`;
+  document.getElementById('perfChart').innerHTML = lineChart([
+    { v: vb.map((x) => x - 1), color: '#8A8A85', dash: true },
+    { v: vf.map((x) => x - 1), color: '#2B2B29', w: 2.5 }
+  ], dates, { label: 'Cumulative return of portfolio vs benchmark' });
+  document.getElementById('ddChart').innerHTML = lineChart([{ v: drawdowns(vf), area: true }], dates, { w: 560, h: 240, zeroTop: true, label: 'Drawdown of portfolio from previous peak' });
+  document.getElementById('varChart').innerHTML = histogram(r, m.var95);
+  document.getElementById('varText').innerHTML = `<span><i style="height:12px;width:12px;background:#2B2B29"></i>Worst 5% of days</span><span>95%: <b class="mono">${usd(m.var95 * s.total)}</b> (${pct(m.var95, 2)})</span><span>99%: <b class="mono">${usd(m.var99 * s.total)}</b> (${pct(m.var99, 2)})</span>`;
+
+  const d = (a, b, f) => { const x = a - b; return (x > 0 ? '+' : '') + f(x); };
+  const pp = (x) => (x * 100).toFixed(2) + ' pp';
+  const rows = [
+    ['Cumulative return', pct(m.ret, 2, true), pct(mb.ret, 2, true), d(m.ret, mb.ret, pp)],
+    ['Volatility (annualised)', pct(m.vol, 2), pct(mb.vol, 2), d(m.vol, mb.vol, pp)],
+    ['Sharpe ratio', m.sharpe.toFixed(2), mb.sharpe.toFixed(2), d(m.sharpe, mb.sharpe, (x) => x.toFixed(2))],
+    ['VaR 95%, 1-day', pct(m.var95, 2) + ' / ' + usd(m.var95 * s.total), pct(mb.var95, 2), d(m.var95, mb.var95, pp)],
+    ['VaR 99%, 1-day', pct(m.var99, 2) + ' / ' + usd(m.var99 * s.total), pct(mb.var99, 2), d(m.var99, mb.var99, pp)],
+    ['Max drawdown', pct(m.mdd, 2), pct(mb.mdd, 2), d(m.mdd, mb.mdd, pp)],
+    ['Beta to benchmark', m.beta.toFixed(2), '1.00', d(m.beta, 1, (x) => x.toFixed(2))],
+    ['Tracking error (annualised)', pct(m.te, 2), '', '']
+  ];
+  document.getElementById('sumTitle').textContent = `Risk and return summary (${period})`;
+  document.getElementById('sumBody').innerHTML = rows.map((x) => `<tr><td>${x[0]}</td><td class="num">${x[1]}</td><td class="num">${x[2]}</td><td class="num">${x[3]}</td></tr>`).join('');
+}
+
+document.getElementById('psel').addEventListener('change', (e) => {
+  current = PORTFOLIOS.find((p) => p.id === e.target.value);
+  window.history.replaceState(null, '', '?p=' + current.id);
+  render();
+});
+document.getElementById('periods').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-k]'); if (!b) return;
+  period = b.dataset.k; render();
+});
+render();
+</script>
+</body>
+</html>

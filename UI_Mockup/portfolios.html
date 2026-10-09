@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolios | Fund Manager</title>
+<style>
+:root{--bg:#F2F2EF;--card:#FFFFFF;--line:#C9C9C5;--line2:#E4E4E0;--ink:#1F1F1E;--muted:#5C5C58;--fill:#EDEDEA;--bar:#6E6E69;--bar2:#A3A39E;--dark:#2B2B29;--pos:#1F5F3A;--neg:#8A2B1E}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;font-size:15px}
+a{color:#3F3F3C}a:hover{color:var(--ink)}
+.mono,.num{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+header#app-header{display:flex;flex-wrap:wrap;align-items:center;gap:12px 32px;padding:12px 32px;background:var(--card);border-bottom:1px solid var(--line)}
+.logo{width:120px;height:36px;border:1px dashed #8A8A85;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted)}
+header nav{display:flex;gap:4px;flex-grow:1;flex-wrap:wrap}
+header nav a{padding:12px 16px;text-decoration:none;border-bottom:2px solid transparent}
+header nav a[aria-current]{font-weight:600;border-bottom-color:var(--ink);color:var(--ink)}
+.user{display:flex;align-items:center;gap:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#DADAD6;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.who{display:flex;flex-direction:column;font-size:13px}.who small{color:var(--muted)}
+.user a{padding:12px 8px;font-size:14px}
+main{max-width:1600px;margin:0 auto;padding:24px 32px 48px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:20px}
+.card h2{margin:0 0 14px;font-size:16px;font-weight:600}
+.crumb{font-size:13px;color:var(--muted)}
+h1{margin:4px 0;font-size:28px;font-weight:600}
+.tag{font-size:12px;padding:2px 9px;border-radius:10px;background:var(--line2);white-space:nowrap}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.tile .l{font-size:13px;color:var(--muted)}.tile .v{font-size:21px;font-weight:600}.tile .s{font-size:12px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.bar-row{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.bar-row .t{display:flex;justify-content:space-between;font-size:14px;gap:8px}
+.track{height:10px;background:var(--fill);border-radius:2px}.fillbar{height:10px;background:var(--bar);border-radius:2px}
+.scroll{overflow-x:auto;position:relative}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:500;color:var(--muted);padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid var(--line2);white-space:nowrap}
+th.num,td.num{text-align:right}
+tfoot td{font-weight:600;border-top:1px solid var(--line);border-bottom:0}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.btn{min-height:44px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;text-decoration:none;font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.btn.primary{background:var(--dark);color:#fff;border-color:var(--dark);font-weight:600}
+.pill{min-height:36px;padding:6px 12px;font:inherit;font-size:13px;border-radius:18px;cursor:pointer;border:1px solid var(--muted);background:var(--card);color:var(--ink)}
+.pill[aria-pressed="true"]{background:var(--dark);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--muted);border-radius:4px;overflow:hidden}
+.seg button{min-height:44px;min-width:52px;padding:0 12px;font:inherit;font-size:14px;cursor:pointer;border:0;border-right:1px solid var(--line);background:var(--card);color:var(--ink)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--dark);color:#fff}
+select,input[type=text],input[type=password],input[type=search],input[type=number]{height:44px;padding:0 12px;font:inherit;font-size:14px;border:1px solid #9A9A95;border-radius:4px;background:#fff;color:var(--ink)}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:640px){main{padding:16px}header#app-header{padding:10px 16px}}
+td:first-child{white-space:normal;min-width:170px}
+.grid2>*{min-width:0}
+
+.layout{display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start}
+aside{flex:1 1 260px;max-width:340px;min-width:0;display:flex;flex-direction:column;gap:14px}
+.content{flex:999 1 680px;min-width:0}
+.pcard{display:flex;flex-direction:column;gap:8px;text-align:left;width:100%;padding:12px 14px;font:inherit;color:var(--ink);cursor:pointer;border-radius:4px;background:#fff;border:1px solid var(--line)}
+.pcard[aria-pressed="true"]{background:var(--fill);border:2px solid var(--ink)}
+.pcard .top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:600}
+.pcard .bot{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.titlebar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+th.sortable button{all:unset;cursor:pointer}
+th.sortable button:focus-visible{outline:2px solid var(--ink)}
+.trade-row>*{min-width:0}
+.trade-row{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:12px;align-items:start}
+.trade-row .stack{gap:12px}
+@media (max-width:1000px){.trade-row{grid-template-columns:minmax(0,1fr)}}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cardhead h2{margin:0}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.live-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pos)}
+.live-dot.paused::before{background:#9A9A95}
+.compact td:first-child{min-width:0;white-space:nowrap}
+@keyframes fu{from{background:#DDEBE2}to{background:transparent}}
+@keyframes fd{from{background:#F2DFDB}to{background:transparent}}
+.fu{animation:fu 1s ease-out}.fd{animation:fd 1s ease-out}
+.mini{min-height:32px;padding:0 10px;font-size:13px}
+.ticket{display:flex;flex-direction:column;gap:14px}
+.ticket .field{display:flex;flex-direction:column;gap:6px}
+.ticket .field>label,.ticket .lbl{font-size:13px;font-weight:500}
+.ticket .seg{width:100%}.ticket .seg button{flex:1}
+.ticket input,.ticket select{width:100%}
+.quote{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:13px;background:var(--fill);border-radius:4px;padding:10px}
+.quote span{display:flex;flex-direction:column;gap:2px}.quote small{color:var(--muted)}
+.kv{display:flex;justify-content:space-between;font-size:14px;gap:8px}
+.kv span:first-child{color:var(--muted)}
+.errbox{font-size:13px;padding:10px 12px;border:1px solid var(--neg);color:var(--neg);background:#F7EDEB;border-radius:4px}
+.confirm{border:2px solid var(--ink);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#FAFAF8}
+.status{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--line2);white-space:nowrap}
+.status.Filled{background:#DDEBE2;color:var(--pos)}
+.status.Rejected,.status.Cancelled{background:#F2DFDB;color:var(--neg)}
+.status.New,.status.Working{background:#E4E4E0}
+.status.Partially{background:#E9E6D6}
+.log{list-style:none;margin:0;padding:0;max-height:260px;overflow-y:auto;font-size:13px}
+.log li{display:grid;grid-template-columns:72px 82px minmax(0,1fr);gap:8px;padding:7px 0;border-bottom:1px solid var(--line2)}
+.log time,.log b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:500}
+.log time{color:var(--muted)}
+#toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:10;max-width:min(360px,calc(100vw - 32px))}
+.toast{background:var(--dark);color:#fff;padding:12px 14px;border-radius:4px;font-size:14px;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.toast.bad{background:var(--neg)}
+</style>
+</head>
+<body>
+<header id="app-header"></header>
+<main>
+  <div class="layout">
+    <aside class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h2 style="margin:0">My portfolios</h2><span class="crumb" id="count"></span>
+      </div>
+      <label for="search" class="sr">Search portfolios</label>
+      <input id="search" type="search" placeholder="Search portfolios or tickers">
+      <div role="group" aria-label="Filter by risk" id="filters" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      <div id="plist" style="display:flex;flex-direction:column;gap:8px"></div>
+      <button type="button" class="btn" id="resetDemo" style="margin-top:8px">Reset demo data</button>
+    </aside>
+
+    <section class="content stack">
+      <div class="titlebar" id="titlebar"></div>
+      <div class="tiles" id="kpis"></div>
+
+      <div class="card">
+          <div class="cardhead">
+            <h2>Live prices</h2>
+            <div style="display:flex;gap:12px;align-items:center">
+              <span class="live-dot" id="liveDot">Live · simulated feed</span>
+              <button type="button" class="btn mini" id="pauseBtn" aria-pressed="false">Pause</button>
+            </div>
+          </div>
+          <div class="scroll"><table class="compact">
+            <thead><tr><th>Ticker</th><th class="num">Bid</th><th class="num">Ask</th><th class="num">Last</th><th class="num">Change</th><th class="num">Chg %</th><th>Trend</th><th class="num">Held</th><th><span class="sr">Trade</span></th></tr></thead>
+            <tbody id="liveBody"></tbody>
+          </table></div>
+          <p class="note" id="liveNote"></p>
+        </div>
+
+
+      <div class="trade-row">
+        <div class="card">
+          <h2>Order entry</h2>
+          <form class="ticket" id="ticket" novalidate></form>
+        </div>
+        <div class="stack">
+        <div class="card">
+          <div class="cardhead"><h2>Orders</h2><span class="crumb" id="orderCount"></span></div>
+          <div class="scroll"><table class="compact">
+            <thead><tr><th>Order ID</th><th>Time</th><th>Side</th><th>Ticker</th><th>Type</th><th class="num">Qty</th><th class="num">Limit</th><th class="num">Filled</th><th class="num">Avg price</th><th>Status</th><th><span class="sr">Actions</span></th></tr></thead>
+            <tbody id="orderBody"></tbody>
+          </table></div>
+        </div>
+        <div class="card">
+          <h2>Execution updates</h2>
+          <ul class="log" id="execLog" aria-live="polite"></ul>
+        </div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card"><h2>Assets by asset class</h2><div id="alloc"></div></div>
+        <div class="card"><h2>Unrealised P&amp;L by asset class</h2><div id="pnlByType"></div>
+          <p class="note">Bond prices are quoted per 100 face value; bond quantity is face value.</p></div>
+      </div>
+
+      <div class="card" id="holdings">
+        <h2>Holdings <span class="crumb" style="font-weight:400">· live prices · click a column to sort</span></h2>
+        <div class="scroll"><table>
+          <thead id="holdHead"></thead><tbody id="holdBody"></tbody><tfoot id="holdFoot"></tfoot>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <h2>Recent trades</h2>
+        <div class="scroll"><table class="compact">
+          <thead><tr><th>Trade date</th><th>Side</th><th>Ticker</th><th>Type</th><th class="num">Quantity</th><th class="num">Price</th><th class="num">Value</th><th>Status</th></tr></thead>
+          <tbody id="tradeBody"></tbody>
+        </table></div>
+        <p class="note">Sample data for training purposes. Prices are simulated, not live market data.</p>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="toasts" aria-live="polite"></div>
+<script>
+const AS_OF = '2026-10-09';
+const RISK_FREE = 0.04;
+
+const PORTFOLIOS = [
+  {
+    id: 'cons', name: 'Conservative Income Portfolio', risk: 'Low',
+    benchmark: 'US Aggregate Bond Index (sample)',
+    cash: 62000, realisedYtd: 8420,
+    sim: { mu: 0.00022, sigma: 0.0042, bmu: 0.00018, bsigma: 0.0038, rho: 0.85, seed: 14 },
+    holdings: [
+      { name: 'US Treasury 4.25% 15-Nov-2034', ticker: 'T 4.25 11/34', type: 'Bond', qty: 300000, cost: 98.10, price: 99.40, prev: 99.30 },
+      { name: 'US Treasury 3.875% 30-Jun-2029', ticker: 'T 3.875 06/29', type: 'Bond', qty: 150000, cost: 99.20, price: 99.85, prev: 99.90 },
+      { name: 'Apple Inc 3.35% 08-Aug-2032', ticker: 'AAPL 3.35 08/32', type: 'Bond', qty: 80000, cost: 94.50, price: 95.60, prev: 95.55 },
+      { name: 'Microsoft Corp 2.40% 08-Aug-2030', ticker: 'MSFT 2.4 08/30', type: 'Bond', qty: 70000, cost: 93.00, price: 94.20, prev: 94.10 },
+      { name: 'iShares Core US Aggregate Bond ETF', ticker: 'AGG', type: 'ETF', qty: 900, cost: 97.20, price: 98.40, prev: 98.30 },
+      { name: 'Vanguard Short-Term Bond ETF', ticker: 'BSV', type: 'ETF', qty: 1000, cost: 76.80, price: 78.10, prev: 78.05 },
+      { name: 'Vanguard Dividend Appreciation ETF', ticker: 'VIG', type: 'ETF', qty: 250, cost: 180.00, price: 201.50, prev: 200.10 },
+      { name: 'Johnson & Johnson', ticker: 'JNJ', type: 'Stock', qty: 300, cost: 152.00, price: 158.40, prev: 157.90 },
+      { name: 'Procter & Gamble', ticker: 'PG', type: 'Stock', qty: 280, cost: 158.00, price: 166.20, prev: 166.80 },
+      { name: 'Coca-Cola Co', ticker: 'KO', type: 'Stock', qty: 600, cost: 61.50, price: 67.30, prev: 67.10 }
+    ],
+    trades: [
+      { date: '2026-10-07', side: 'Buy', ticker: 'AGG', type: 'ETF', qty: 200, price: 98.20, status: 'Pending settlement' },
+      { date: '2026-10-02', side: 'Sell', ticker: 'KO', type: 'Stock', qty: 150, price: 66.90, status: 'Settled' },
+      { date: '2026-09-24', side: 'Buy', ticker: 'T 4.25 11/34', type: 'Bond', qty: 100000, price: 99.05, status: 'Settled' }
+    ]
+  },
+  {
+    id: 'bal', name: 'Balanced Portfolio', risk: 'Medium',
+    benchmark: '60/40 Equity-Bond Blend (sample)',
+    cash: 60000, realisedYtd: 21350,
+    sim: { mu: 0.00038, sigma: 0.0082, bmu: 0.00032, bsigma: 0.0074, rho: 0.9, seed: 160 },
+    holdings: [
+      { name: 'Vanguard S&P 500 ETF', ticker: 'VOO', type: 'ETF', qty: 400, cost: 430.00, price: 505.20, prev: 502.80 },
+      { name: 'iShares Core MSCI EAFE ETF', ticker: 'IEFA', type: 'ETF', qty: 1200, cost: 68.00, price: 74.60, prev: 74.90 },
+      { name: 'iShares Core US Aggregate Bond ETF', ticker: 'AGG', type: 'ETF', qty: 1000, cost: 97.00, price: 98.40, prev: 98.30 },
+      { name: 'US Treasury 4.00% 15-Feb-2031', ticker: 'T 4.0 02/31', type: 'Bond', qty: 150000, cost: 98.50, price: 99.10, prev: 99.15 },
+      { name: 'JPMorgan Chase 4.50% 22-Apr-2033', ticker: 'JPM 4.5 04/33', type: 'Bond', qty: 80000, cost: 97.00, price: 98.30, prev: 98.20 },
+      { name: 'Microsoft Corp', ticker: 'MSFT', type: 'Stock', qty: 180, cost: 330.00, price: 415.30, prev: 411.90 },
+      { name: 'Apple Inc', ticker: 'AAPL', type: 'Stock', qty: 320, cost: 170.00, price: 226.40, prev: 228.10 },
+      { name: 'JPMorgan Chase & Co', ticker: 'JPM', type: 'Stock', qty: 300, cost: 185.00, price: 221.70, prev: 220.40 },
+      { name: 'UnitedHealth Group', ticker: 'UNH', type: 'Stock', qty: 100, cost: 520.00, price: 489.20, prev: 492.00 },
+      { name: 'Exxon Mobil Corp', ticker: 'XOM', type: 'Stock', qty: 500, cost: 112.00, price: 118.60, prev: 117.90 }
+    ],
+    trades: [
+      { date: '2026-10-08', side: 'Buy', ticker: 'VOO', type: 'ETF', qty: 50, price: 503.10, status: 'Pending settlement' },
+      { date: '2026-10-03', side: 'Sell', ticker: 'UNH', type: 'Stock', qty: 40, price: 495.60, status: 'Settled' },
+      { date: '2026-09-26', side: 'Buy', ticker: 'JPM 4.5 04/33', type: 'Bond', qty: 30000, price: 98.00, status: 'Settled' }
+    ]
+  },
+  {
+    id: 'grow', name: 'Growth Portfolio', risk: 'High',
+    benchmark: 'Nasdaq-100 Index (sample)',
+    cash: 45000, realisedYtd: 46900,
+    sim: { mu: 0.0006, sigma: 0.0158, bmu: 0.0005, bsigma: 0.0135, rho: 0.88, seed: 193 },
+    holdings: [
+      { name: 'NVIDIA Corp', ticker: 'NVDA', type: 'Stock', qty: 1100, cost: 62.00, price: 121.40, prev: 118.70 },
+      { name: 'Microsoft Corp', ticker: 'MSFT', type: 'Stock', qty: 250, cost: 360.00, price: 415.30, prev: 411.90 },
+      { name: 'Amazon.com Inc', ticker: 'AMZN', type: 'Stock', qty: 500, cost: 145.00, price: 186.50, prev: 184.20 },
+      { name: 'Alphabet Inc Class A', ticker: 'GOOGL', type: 'Stock', qty: 520, cost: 140.00, price: 163.80, prev: 165.10 },
+      { name: 'Meta Platforms Inc', ticker: 'META', type: 'Stock', qty: 160, cost: 410.00, price: 567.30, prev: 560.80 },
+      { name: 'Tesla Inc', ticker: 'TSLA', type: 'Stock', qty: 300, cost: 260.00, price: 238.10, prev: 244.60 },
+      { name: 'Invesco QQQ Trust', ticker: 'QQQ', type: 'ETF', qty: 220, cost: 400.00, price: 487.60, prev: 484.10 },
+      { name: 'ARK Innovation ETF', ticker: 'ARKK', type: 'ETF', qty: 1500, cost: 58.00, price: 49.20, prev: 50.10 },
+      { name: 'Vanguard FTSE Emerging Markets ETF', ticker: 'VWO', type: 'ETF', qty: 2000, cost: 42.00, price: 46.30, prev: 46.50 },
+      { name: 'Ford Motor Credit 6.95% 10-Jun-2028', ticker: 'F 6.95 06/28', type: 'Bond', qty: 100000, cost: 99.50, price: 102.40, prev: 102.30 }
+    ],
+    trades: [
+      { date: '2026-10-08', side: 'Buy', ticker: 'NVDA', type: 'Stock', qty: 200, price: 119.80, status: 'Pending settlement' },
+      { date: '2026-10-06', side: 'Sell', ticker: 'TSLA', type: 'Stock', qty: 100, price: 246.20, status: 'Settled' },
+      { date: '2026-09-30', side: 'Buy', ticker: 'VWO', type: 'ETF', qty: 500, price: 46.10, status: 'Settled' }
+    ]
+  }
+];
+
+const usd = (x, dp = 0) => (x < 0 ? '-' : '') + '$' + Math.abs(x).toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const sUsd = (x, dp = 0) => (x > 0 ? '+' : '') + usd(x, dp);
+const pct = (x, dp = 2, sign = false) => (sign && x > 0 ? '+' : '') + (x * 100).toFixed(dp) + '%';
+const num = (x, dp = 0) => x.toLocaleString('en-US', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const cls = (x) => (x > 0 ? 'pos' : x < 0 ? 'neg' : '');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const unitValue = (type, qty, px) => (type === 'Bond' ? qty * px / 100 : qty * px);
+
+function summarise(p) {
+  const rows = p.holdings.map((h) => {
+    const mv = unitValue(h.type, h.qty, h.price);
+    const cv = unitValue(h.type, h.qty, h.cost);
+    const pv = unitValue(h.type, h.qty, h.prev);
+    return { ...h, mv, cv, pnl: mv - cv, pnlPct: (mv - cv) / cv, day: mv - pv, dayPct: (h.price - h.prev) / h.prev };
+  });
+  const invested = rows.reduce((a, r) => a + r.mv, 0);
+  const total = invested + p.cash;
+  rows.forEach((r) => { r.weight = r.mv / total; });
+  const unreal = rows.reduce((a, r) => a + r.pnl, 0);
+  const day = rows.reduce((a, r) => a + r.day, 0);
+  const byType = {};
+  ['Stock', 'Bond', 'ETF'].forEach((t) => {
+    const rs = rows.filter((r) => r.type === t);
+    byType[t] = { mv: rs.reduce((a, r) => a + r.mv, 0), pnl: rs.reduce((a, r) => a + r.pnl, 0), n: rs.length };
+  });
+  byType.Cash = { mv: p.cash, pnl: 0, n: 0 };
+  return { rows, invested, total, unreal, day, dayPct: day / (total - day), byType };
+}
+
+function getParam(name) {
+  return new URLSearchParams(location.search).get(name);
+}
+
+function findPortfolio() {
+  const id = getParam('p');
+  return PORTFOLIOS.find((p) => p.id === id) || PORTFOLIOS[0];
+}
+
+function renderHeader(active, pid) {
+  const q = pid ? '?p=' + pid : '';
+  const user = sessionUser();
+  document.getElementById('app-header').innerHTML = `
+    <div class="logo">[APP LOGO]</div>
+    <nav aria-label="Main">
+      <a href="portfolios.html${q}" ${active === 'portfolios' ? 'aria-current="page"' : ''}>Portfolios</a>
+      <a href="analytics.html${q}" ${active === 'analytics' ? 'aria-current="page"' : ''}>Analytics</a>
+    </nav>
+    <div class="user">
+      <div class="avatar" aria-hidden="true">${esc(user.slice(0, 2).toUpperCase())}</div>
+      <div class="who"><span>${esc(user)}</span><small>Fund Manager</small></div>
+      <a href="login.html" id="logout">Log out</a>
+    </div>`;
+  document.getElementById('logout').addEventListener('click', () => {
+    try { sessionStorage.removeItem('fm_user'); } catch (e) {}
+  });
+}
+
+function sessionUser() {
+  try { return sessionStorage.getItem('fm_user') || 'Demo user'; } catch (e) { return 'Demo user'; }
+}
+
+const STORE_KEY = 'fm_book_v1';
+const TICK_MS = 1500;
+const MAX_QTY = { Stock: 20000, ETF: 20000, Bond: 2000000 };
+
+const clone = (o) => JSON.parse(JSON.stringify(o));
+const nowTime = () => new Date().toLocaleTimeString('en-GB');
+const today = () => new Date().toISOString().slice(0, 10);
+
+function freshBook() {
+  const b = { seq: 1001, portfolios: {} };
+  PORTFOLIOS.forEach((p) => { b.portfolios[p.id] = { cash: p.cash, realisedYtd: p.realisedYtd, holdings: clone(p.holdings), trades: clone(p.trades), orders: [], log: [] }; });
+  return b;
+}
+function loadBook() {
+  try { const s = sessionStorage.getItem(STORE_KEY); if (s) return JSON.parse(s); } catch (e) {}
+  return freshBook();
+}
+let BOOK = loadBook();
+function saveBook() { try { sessionStorage.setItem(STORE_KEY, JSON.stringify(BOOK)); } catch (e) {} }
+
+function gauss() { let u = 0, v = 0; while (u === 0) u = Math.random(); while (v === 0) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const MKT = {};
+PORTFOLIOS.forEach((p) => p.holdings.forEach((h) => {
+  if (!MKT[h.ticker]) MKT[h.ticker] = { ticker: h.ticker, name: h.name, type: h.type, prev: h.prev, last: h.price, dir: 0, hist: [h.price] };
+}));
+Object.values(MKT).forEach((m) => {
+  const vol = m.type === 'Bond' ? 0.00008 : m.type === 'ETF' ? 0.0006 : 0.001;
+  for (let i = 0; i < 29; i++) m.hist.unshift(Math.round(m.hist[0] * (1 + vol * gauss()) * 100) / 100);
+});
+function quote(m) {
+  const half = m.type === 'Bond' ? 0.05 : Math.max(0.01, m.last * 0.0002);
+  return { bid: m.last - half, ask: m.last + half };
+}
+function tickMarket() {
+  Object.values(MKT).forEach((m) => {
+    const vol = m.type === 'Bond' ? 0.00008 : m.type === 'ETF' ? 0.0006 : 0.001;
+    const nx = Math.round(m.last * (1 + vol * gauss()) * 100) / 100;
+    m.dir = nx > m.last ? 1 : nx < m.last ? -1 : 0;
+    m.last = nx;
+    m.hist.push(nx); if (m.hist.length > 40) m.hist.shift();
+  });
+}
+
+let risk = 'All', query = '', current = findPortfolio(), sortKey = 'mv', sortDir = -1, paused = false;
+let ticket = { side: 'Buy', ticker: current.holdings[0].ticker, type: 'Market', qty: '', limit: '', tif: 'Day', review: false, error: '' };
+
+const book = () => BOOK.portfolios[current.id];
+function view(pid) {
+  const p = PORTFOLIOS.find((x) => x.id === pid), b = BOOK.portfolios[pid];
+  return { ...p, cash: b.cash, realisedYtd: b.realisedYtd, holdings: b.holdings.map((h) => ({ ...h, price: MKT[h.ticker].last, prev: MKT[h.ticker].prev })) };
+}
+const step = (t) => (t === 'Bond' ? 1000 : 1);
+const pxFmt = (v) => num(v, 2);
+
+function openOrders(b) { return b.orders.filter((o) => ['Pending New', 'New', 'Partially Filled', 'Pending Cancel'].includes(o.status)); }
+function availableCash(b) {
+  return b.cash - openOrders(b).filter((o) => o.side === 'Buy').reduce((a, o) => {
+    const m = MKT[o.ticker], px = o.type === 'Limit' ? o.limit : quote(m).ask * 1.02;
+    return a + unitValue(m.type, o.qty - o.filled, px);
+  }, 0);
+}
+function availableToSell(b, ticker) {
+  const h = b.holdings.find((x) => x.ticker === ticker);
+  const held = h ? h.qty : 0;
+  return held - openOrders(b).filter((o) => o.side === 'Sell' && o.ticker === ticker).reduce((a, o) => a + o.qty - o.filled, 0);
+}
+
+function toast(msg, bad) {
+  const el = document.createElement('div'); el.className = 'toast' + (bad ? ' bad' : ''); el.textContent = msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+function logEvent(pid, o, text) {
+  BOOK.portfolios[pid].log.unshift({ t: nowTime(), id: o.id, text });
+  BOOK.portfolios[pid].log = BOOK.portfolios[pid].log.slice(0, 100);
+}
+function orderChanged(pid) {
+  saveBook();
+  if (pid === current.id) { renderOrders(); renderLog(); renderTicketLive(); }
+}
+
+function submitOrder() {
+  const b = book(), m = MKT[ticket.ticker];
+  const o = { id: 'ORD-' + BOOK.seq++, pid: current.id, time: nowTime(), side: ticket.side, ticker: ticket.ticker, type: ticket.type,
+    qty: Number(ticket.qty), limit: ticket.type === 'Limit' ? Number(ticket.limit) : null, tif: ticket.tif, filled: 0, avgPx: 0, status: 'Pending New' };
+  b.orders.unshift(o);
+  logEvent(o.pid, o, `Sent: ${o.side} ${num(o.qty)} ${o.ticker} ${o.type}${o.limit ? ' @ ' + pxFmt(o.limit) : ''} (${o.tif})`);
+  orderChanged(o.pid);
+  setTimeout(() => {
+    if (o.qty > MAX_QTY[m.type]) {
+      o.status = 'Rejected';
+      logEvent(o.pid, o, `Rejected by broker: exceeds max order size (${num(MAX_QTY[m.type])})`);
+      toast(`${o.id} rejected: exceeds max order size`, true);
+      orderChanged(o.pid); return;
+    }
+    o.status = 'New';
+    logEvent(o.pid, o, o.type === 'Limit' ? 'Acknowledged. Working at limit ' + pxFmt(o.limit) : 'Acknowledged by broker');
+    orderChanged(o.pid);
+    if (o.type === 'Market') scheduleMarketFills(o);
+  }, 500 + Math.random() * 400);
+}
+
+function splitQty(q, type) {
+  const s = step(type), n = q >= 3 * s * 10 ? 1 + Math.floor(Math.random() * 3) : 1, parts = [];
+  let left = q;
+  for (let i = 0; i < n - 1; i++) { const part = Math.max(s, Math.floor(q / n / s) * s); parts.push(part); left -= part; }
+  parts.push(left);
+  return parts.filter((x) => x > 0);
+}
+function scheduleMarketFills(o) {
+  const m = MKT[o.ticker];
+  let delay = 0;
+  splitQty(o.qty, m.type).forEach((q) => {
+    delay += 500 + Math.random() * 900;
+    setTimeout(() => {
+      if (o.status === 'Cancelled') return;
+      const qt = quote(m), half = (qt.ask - qt.bid) / 2;
+      const px = Math.round(((o.side === 'Buy' ? qt.ask : qt.bid) + (Math.random() - 0.5) * half) * 100) / 100;
+      applyFill(o, q, px);
+    }, delay);
+  });
+}
+function checkLimitOrders() {
+  Object.values(BOOK.portfolios).forEach((b) => b.orders.forEach((o) => {
+    if (o.type !== 'Limit' || !['New', 'Partially Filled'].includes(o.status)) return;
+    const m = MKT[o.ticker], qt = quote(m);
+    const marketable = o.side === 'Buy' ? qt.ask <= o.limit : qt.bid >= o.limit;
+    if (!marketable) return;
+    const remaining = o.qty - o.filled, s = step(m.type);
+    const q = remaining <= 10 * s || Math.random() < 0.5 ? remaining : Math.max(s, Math.floor(remaining / 2 / s) * s);
+    const px = o.side === 'Buy' ? Math.min(o.limit, qt.ask) : Math.max(o.limit, qt.bid);
+    applyFill(o, q, Math.round(px * 100) / 100);
+  }));
+}
+
+function applyFill(o, q, px) {
+  const b = BOOK.portfolios[o.pid], m = MKT[o.ticker];
+  let h = b.holdings.find((x) => x.ticker === o.ticker);
+  if (o.side === 'Sell' && !h) return;
+  const value = unitValue(m.type, q, px);
+  if (o.side === 'Buy') {
+    b.cash -= value;
+    if (h) { h.cost = (h.qty * h.cost + q * px) / (h.qty + q); h.qty += q; }
+    else b.holdings.push({ name: m.name, ticker: m.ticker, type: m.type, qty: q, cost: px, price: px, prev: m.prev });
+  } else {
+    b.cash += value;
+    b.realisedYtd += unitValue(m.type, q, px - h.cost);
+    h.qty -= q;
+    if (h.qty <= 0) b.holdings = b.holdings.filter((x) => x !== h);
+  }
+  o.avgPx = (o.avgPx * o.filled + px * q) / (o.filled + q);
+  o.filled += q;
+  o.status = o.filled >= o.qty ? 'Filled' : 'Partially Filled';
+  b.trades.unshift({ date: today(), side: o.side, ticker: o.ticker, type: m.type, qty: q, price: px, status: 'Pending settlement' });
+  b.trades = b.trades.slice(0, 20);
+  const msg = `${o.status === 'Filled' ? 'Filled' : 'Partial fill'}: ${o.side} ${num(q)} @ ${pxFmt(px)} (${num(o.filled)}/${num(o.qty)})`;
+  logEvent(o.pid, o, msg);
+  toast(`${o.id} ${o.ticker} ${msg}`);
+  saveBook();
+  if (o.pid === current.id) renderAll(false);
+}
+
+function cancelOrder(id) {
+  const b = book(), o = b.orders.find((x) => x.id === id);
+  if (!o || !['New', 'Partially Filled'].includes(o.status)) return;
+  o.status = 'Pending Cancel';
+  logEvent(o.pid, o, 'Cancel requested');
+  orderChanged(o.pid);
+  setTimeout(() => {
+    if (o.status !== 'Pending Cancel') return;
+    o.status = 'Cancelled';
+    logEvent(o.pid, o, `Cancelled. ${num(o.qty - o.filled)} unfilled`);
+    toast(`${o.id} cancelled`);
+    orderChanged(o.pid);
+  }, 400);
+}
+
+function select(id) {
+  current = PORTFOLIOS.find((p) => p.id === id);
+  history.replaceState(null, '', '?p=' + id);
+  ticket = { side: 'Buy', ticker: book().holdings[0] ? book().holdings[0].ticker : Object.keys(MKT)[0], type: 'Market', qty: '', limit: '', tif: 'Day', review: false, error: '' };
+  renderHeader('portfolios', current.id);
+  renderList();
+  renderTicket();
+  renderAll(true);
+}
+
+function renderList() {
+  const q = query.toLowerCase();
+  const list = PORTFOLIOS.filter((p) => (risk === 'All' || p.risk === risk) &&
+    (!q || p.name.toLowerCase().includes(q) || BOOK.portfolios[p.id].holdings.some((h) => h.ticker.toLowerCase().includes(q) || h.name.toLowerCase().includes(q))));
+  document.getElementById('count').textContent = list.length + ' of ' + PORTFOLIOS.length;
+  document.getElementById('filters').innerHTML = ['All', 'Low', 'Medium', 'High'].map((r) =>
+    `<button type="button" class="pill" data-r="${r}" aria-pressed="${r === risk}">${r === 'All' ? 'All' : r + ' risk'}</button>`).join('');
+  document.getElementById('plist').innerHTML = list.length ? list.map((p) => `
+    <button type="button" class="pcard" data-id="${p.id}" aria-pressed="${p.id === current.id}">
+      <span class="top"><span>${esc(p.name)}</span><span class="tag">${p.risk} risk</span></span>
+      <span class="bot mono"><span data-tot="${p.id}"></span><span data-day="${p.id}"></span></span>
+    </button>`).join('') : '<p class="crumb">No portfolios match.</p>';
+  updateListValues();
+}
+function updateListValues() {
+  PORTFOLIOS.forEach((p) => {
+    const t = document.querySelector(`[data-tot="${p.id}"]`), d = document.querySelector(`[data-day="${p.id}"]`);
+    if (!t) return;
+    const s = summarise(view(p.id));
+    t.textContent = usd(s.total);
+    d.textContent = 'Day ' + pct(s.dayPct, 2, true); d.className = cls(s.day);
+  });
+}
+
+function renderTitle() {
+  const p = current;
+  document.getElementById('titlebar').innerHTML = `
+    <div>
+      <div class="crumb">Portfolios / ${esc(p.name)}</div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><h1>${esc(p.name)}</h1><span class="tag">${p.risk} risk</span></div>
+      <div class="crumb">Base currency USD · Benchmark ${esc(p.benchmark)}</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn" href="#holdings">Holdings</a>
+      <a class="btn primary" href="analytics.html?p=${p.id}">View analytics</a>
+    </div>`;
+}
+
+function renderKpis(s, v) {
+  document.getElementById('kpis').innerHTML = `
+    <div class="tile"><span class="l">Total assets</span><span class="v mono">${usd(s.total)}</span><span class="s">Market value incl. cash</span></div>
+    <div class="tile"><span class="l">Total cash</span><span class="v mono">${usd(v.cash)}</span><span class="s">${pct(v.cash / s.total, 1)} of assets</span></div>
+    <div class="tile"><span class="l">Invested</span><span class="v mono">${usd(s.invested)}</span><span class="s">${s.rows.length} positions</span></div>
+    <div class="tile"><span class="l">Unrealised P&amp;L</span><span class="v mono ${cls(s.unreal)}">${sUsd(s.unreal)}</span><span class="s">${pct(s.unreal / (s.invested - s.unreal), 2, true)} on cost</span></div>
+    <div class="tile"><span class="l">Realised P&amp;L (YTD)</span><span class="v mono ${cls(v.realisedYtd)}">${sUsd(v.realisedYtd)}</span><span class="s">Closed positions</span></div>
+    <div class="tile"><span class="l">Day P&amp;L</span><span class="v mono ${cls(s.day)}">${sUsd(s.day)}</span><span class="s">${pct(s.dayPct, 2, true)} since previous close</span></div>`;
+}
+
+function spark(hist) {
+  const lo = Math.min(...hist), hi = Math.max(...hist), r = hi - lo || 1;
+  const pts = hist.map((v, i) => (i / Math.max(1, hist.length - 1) * 80).toFixed(1) + ',' + (22 - (v - lo) / r * 20).toFixed(1)).join(' ');
+  return `<svg width="80" height="24" viewBox="0 0 80 24" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#5C5C58" stroke-width="1.5"/></svg>`;
+}
+let liveKey = '';
+function renderLive(flash) {
+  const b = book();
+  const tickers = [...new Set(b.holdings.map((h) => h.ticker))];
+  const key = current.id + '|' + tickers.join(',');
+  const body = document.getElementById('liveBody');
+  if (key !== liveKey) {
+    liveKey = key;
+    body.innerHTML = tickers.map((t) => `<tr data-row="${esc(t)}">
+      <td class="mono"><b>${esc(t)}</b></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td></td><td class="num"></td>
+      <td><span style="display:flex;gap:4px"><button type="button" class="btn mini" data-trade="Buy" data-t="${esc(t)}" aria-label="Buy ${esc(t)}">Buy</button><button type="button" class="btn mini" data-trade="Sell" data-t="${esc(t)}" aria-label="Sell ${esc(t)}">Sell</button></span></td></tr>`).join('');
+  }
+  body.querySelectorAll('tr[data-row]').forEach((tr) => {
+    const t = tr.dataset.row, m = MKT[t], q = quote(m), ch = m.last - m.prev, c = tr.cells;
+    const held = b.holdings.find((h) => h.ticker === t);
+    c[1].textContent = pxFmt(q.bid); c[2].textContent = pxFmt(q.ask);
+    c[3].innerHTML = `<b>${pxFmt(m.last)}</b> ${m.dir > 0 ? '▲' : m.dir < 0 ? '▼' : '&nbsp;&nbsp;'}`;
+    c[3].classList.remove('fu', 'fd');
+    if (flash && m.dir) { void c[3].offsetWidth; c[3].classList.add(m.dir > 0 ? 'fu' : 'fd'); }
+    c[4].textContent = (ch > 0 ? '+' : '') + pxFmt(ch); c[4].className = 'num ' + cls(ch);
+    c[5].textContent = pct(ch / m.prev, 2, true); c[5].className = 'num ' + cls(ch);
+    c[6].innerHTML = spark(m.hist);
+    c[7].textContent = held ? num(held.qty) : '';
+  });
+  document.getElementById('liveNote').textContent = (paused ? 'Paused' : 'Last update ' + nowTime()) + ' · Bid/ask spread simulated · Bonds quoted per 100 face value';
+}
+
+function renderTicket() {
+  const tickers = Object.keys(MKT);
+  const held = new Set(book().holdings.map((h) => h.ticker));
+  const opt = (t) => `<option value="${esc(t)}" ${t === ticket.ticker ? 'selected' : ''}>${esc(t)} · ${esc(MKT[t].name)}</option>`;
+  document.getElementById('ticket').innerHTML = `
+    <div class="field"><span class="lbl" id="sideLbl">Side</span>
+      <div class="seg" role="group" aria-labelledby="sideLbl" id="tkSide">
+        <button type="button" data-v="Buy" aria-pressed="${ticket.side === 'Buy'}">Buy</button>
+        <button type="button" data-v="Sell" aria-pressed="${ticket.side === 'Sell'}">Sell</button>
+      </div></div>
+    <div class="field"><label for="tkTicker">Instrument</label>
+      <select id="tkTicker">
+        <optgroup label="In this portfolio">${tickers.filter((t) => held.has(t)).map(opt).join('')}</optgroup>
+        <optgroup label="Other instruments">${tickers.filter((t) => !held.has(t)).map(opt).join('')}</optgroup>
+      </select></div>
+    <div class="quote" id="tkQuote"></div>
+    <div class="field"><span class="lbl" id="typeLbl">Order type</span>
+      <div class="seg" role="group" aria-labelledby="typeLbl" id="tkType">
+        <button type="button" data-v="Market" aria-pressed="${ticket.type === 'Market'}">Market</button>
+        <button type="button" data-v="Limit" aria-pressed="${ticket.type === 'Limit'}">Limit</button>
+      </div></div>
+    <div class="field"><label for="tkQty" id="qtyLbl">Quantity</label>
+      <input id="tkQty" type="number" min="0" inputmode="numeric" value="${esc(ticket.qty)}" placeholder="0"></div>
+    <div class="field" id="limitField" ${ticket.type === 'Limit' ? '' : 'hidden'}><label for="tkLimit">Limit price</label>
+      <input id="tkLimit" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(ticket.limit)}" placeholder="0.00"></div>
+    <div class="field"><label for="tkTif">Time in force</label>
+      <select id="tkTif"><option ${ticket.tif === 'Day' ? 'selected' : ''}>Day</option><option ${ticket.tif === 'GTC' ? 'selected' : ''}>GTC</option></select></div>
+    <div id="tkSummary" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div id="tkError"></div>
+    <div id="tkActions"></div>`;
+  renderTicketDynamic();
+}
+function validateTicket() {
+  const b = book(), m = MKT[ticket.ticker], q = Number(ticket.qty), s = step(m.type);
+  if (!ticket.qty || !(q > 0)) return 'Enter a quantity greater than zero.';
+  if (q % s !== 0) return m.type === 'Bond' ? 'Bond quantity is face value in multiples of 1,000.' : 'Quantity must be a whole number.';
+  if (ticket.type === 'Limit' && !(Number(ticket.limit) > 0)) return 'Enter a limit price.';
+  const px = ticket.type === 'Limit' ? Number(ticket.limit) : quote(m).ask * 1.02;
+  if (ticket.side === 'Buy' && unitValue(m.type, q, px) > availableCash(b)) return 'Insufficient available cash for this order.';
+  if (ticket.side === 'Sell' && q > availableToSell(b, ticket.ticker)) return 'Quantity exceeds the position available to sell.';
+  return '';
+}
+function renderTicketLive() {
+  if (!document.getElementById('tkQuote')) return;
+  const b = book(), m = MKT[ticket.ticker], q = quote(m), qty = Number(ticket.qty) || 0;
+  document.getElementById('tkQuote').innerHTML = `<span><small>Bid</small><b class="mono">${pxFmt(q.bid)}</b></span><span><small>Ask</small><b class="mono">${pxFmt(q.ask)}</b></span><span><small>Last</small><b class="mono">${pxFmt(m.last)}</b></span>`;
+  const px = ticket.type === 'Limit' && Number(ticket.limit) > 0 ? Number(ticket.limit) : (ticket.side === 'Buy' ? q.ask : q.bid);
+  document.getElementById('tkSummary').innerHTML = `
+    <div class="kv"><span>Estimated value</span><span class="mono">${qty ? usd(unitValue(m.type, qty, px), 2) : '-'}</span></div>
+    <div class="kv"><span>${ticket.side === 'Buy' ? 'Available cash' : 'Available to sell'}</span><span class="mono">${ticket.side === 'Buy' ? usd(availableCash(b)) : num(availableToSell(b, ticket.ticker))}</span></div>`;
+}
+function renderTicketDynamic() {
+  if (!document.getElementById('tkQuote')) return;
+  const b = book(), m = MKT[ticket.ticker], q = quote(m), qty = Number(ticket.qty) || 0;
+  document.getElementById('tkQuote').innerHTML = `<span><small>Bid</small><b class="mono">${pxFmt(q.bid)}</b></span><span><small>Ask</small><b class="mono">${pxFmt(q.ask)}</b></span><span><small>Last</small><b class="mono">${pxFmt(m.last)}</b></span>`;
+  document.getElementById('qtyLbl').textContent = m.type === 'Bond' ? 'Quantity (face value, multiples of 1,000)' : 'Quantity (' + (m.type === 'ETF' ? 'units' : 'shares') + ')';
+  const px = ticket.type === 'Limit' && Number(ticket.limit) > 0 ? Number(ticket.limit) : (ticket.side === 'Buy' ? q.ask : q.bid);
+  document.getElementById('tkSummary').innerHTML = `
+    <div class="kv"><span>Estimated value</span><span class="mono">${qty ? usd(unitValue(m.type, qty, px), 2) : '-'}</span></div>
+    <div class="kv"><span>${ticket.side === 'Buy' ? 'Available cash' : 'Available to sell'}</span><span class="mono">${ticket.side === 'Buy' ? usd(availableCash(b)) : num(availableToSell(b, ticket.ticker))}</span></div>`;
+  document.getElementById('tkError').innerHTML = ticket.error ? `<div class="errbox" role="alert">${esc(ticket.error)}</div>` : '';
+  document.getElementById('tkActions').innerHTML = ticket.review ? `
+    <div class="confirm">
+      <b>Confirm order</b>
+      <span>${ticket.side} ${num(qty)} ${esc(ticket.ticker)} at ${ticket.type === 'Market' ? 'market' : 'limit ' + pxFmt(Number(ticket.limit))} · ${ticket.tif}</span>
+      <span class="crumb">Estimated ${usd(unitValue(m.type, qty, px), 2)}${ticket.type === 'Market' ? ' (market price may move before execution)' : ''}</span>
+      <div style="display:flex;gap:8px"><button type="button" class="btn" id="tkEdit" style="flex:1">Edit</button><button type="submit" class="btn primary" style="flex:2">Send order</button></div>
+    </div>` : `<button type="button" class="btn primary" id="tkReview" style="width:100%">Review ${ticket.side.toLowerCase()} order</button>`;
+}
+
+function renderOrders() {
+  const b = book();
+  const open = openOrders(b).length;
+  document.getElementById('orderCount').textContent = `${open} open · ${b.orders.length} today`;
+  document.getElementById('orderBody').innerHTML = b.orders.length ? b.orders.map((o) => {
+    const st = o.status === 'New' && o.type === 'Limit' ? 'Working' : o.status;
+    return `<tr>
+      <td class="mono">${o.id}</td><td class="mono">${o.time}</td><td><b>${o.side}</b></td><td class="mono">${esc(o.ticker)}</td><td>${o.type}</td>
+      <td class="num">${num(o.qty)}</td><td class="num">${o.limit ? pxFmt(o.limit) : ''}</td><td class="num">${num(o.filled)}</td>
+      <td class="num">${o.filled ? pxFmt(o.avgPx) : ''}</td>
+      <td><span class="status ${st.split(' ')[0]}">${st}</span></td>
+      <td>${['New', 'Partially Filled'].includes(o.status) ? `<button type="button" class="btn mini" data-cancel="${o.id}">Cancel</button>` : ''}</td></tr>`;
+  }).join('') : '<tr><td colspan="11" class="crumb" style="padding:16px 8px">No orders yet. Use Order entry or the Buy/Sell buttons in Live prices.</td></tr>';
+}
+function renderLog() {
+  const b = book();
+  document.getElementById('execLog').innerHTML = b.log.length ? b.log.map((e) => `<li><time>${e.t}</time><b>${e.id}</b><span>${esc(e.text)}</span></li>`).join('') : '<li style="display:block" class="crumb">Execution updates appear here as orders are acknowledged, filled, cancelled or rejected.</li>';
+}
+
+function bars(items, total, labelFn) {
+  return items.map(([label, v]) => `
+    <div class="bar-row"><div class="t"><span>${label}</span><span class="mono">${labelFn(v)}</span></div>
+    <div class="track"><div class="fillbar" style="width:${Math.max(0, v / total * 100).toFixed(1)}%"></div></div></div>`).join('');
+}
+function renderAlloc(s) {
+  const typeLabel = { Stock: 'Stocks', Bond: 'Bonds', ETF: 'ETFs', Cash: 'Cash' };
+  document.getElementById('alloc').innerHTML = bars(['Stock', 'Bond', 'ETF', 'Cash'].map((t) => [typeLabel[t] + (s.byType[t].n ? ' (' + s.byType[t].n + ')' : ''), s.byType[t].mv]), s.total, (v) => pct(v / s.total, 1) + ' · ' + usd(v));
+  const maxPnl = Math.max(...['Stock', 'Bond', 'ETF'].map((t) => Math.abs(s.byType[t].pnl)), 1);
+  document.getElementById('pnlByType').innerHTML = ['Stock', 'Bond', 'ETF'].map((t) => {
+    const v = s.byType[t].pnl;
+    return `<div class="bar-row"><div class="t"><span>${typeLabel[t]}</span><span class="mono ${cls(v)}">${sUsd(v)}</span></div>
+      <div class="track"><div class="fillbar" style="width:${(Math.abs(v) / maxPnl * 100).toFixed(1)}%;background:${v < 0 ? 'var(--neg)' : 'var(--bar)'}"></div></div></div>`;
+  }).join('');
+}
+
+const COLS = [['name', 'Instrument'], ['ticker', 'Ticker'], ['type', 'Type'], ['qty', 'Quantity', 1], ['cost', 'Avg cost', 1], ['price', 'Live price', 1], ['mv', 'Market value', 1], ['weight', 'Weight', 1], ['pnl', 'Unrealised P&L', 1], ['pnlPct', 'P&L %', 1], ['dayPct', 'Day', 1]];
+function renderHoldHead() {
+  const arrow = (k) => (k === sortKey ? (sortDir > 0 ? ' ▲' : ' ▼') : '');
+  document.getElementById('holdHead').innerHTML = `<tr>${COLS.map(([k, l, n]) => `<th class="sortable ${n ? 'num' : ''}" aria-sort="${k === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'}"><button type="button" data-k="${k}">${l}${arrow(k)}</button></th>`).join('')}</tr>`;
+}
+function renderHoldings(s, v) {
+  const rows = [...s.rows].sort((a, b) => { const x = a[sortKey], y = b[sortKey]; return (typeof x === 'string' ? x.localeCompare(y) : x - y) * sortDir; });
+  document.getElementById('holdBody').innerHTML = rows.map((r) => `<tr>
+    <td>${esc(r.name)}</td><td class="mono">${esc(r.ticker)}</td><td>${r.type}</td>
+    <td class="num">${num(r.qty)}</td><td class="num">${num(r.cost, 2)}</td><td class="num">${num(r.price, 2)}</td>
+    <td class="num">${usd(r.mv)}</td><td class="num">${pct(r.weight, 1)}</td>
+    <td class="num ${cls(r.pnl)}">${sUsd(r.pnl)}</td><td class="num ${cls(r.pnlPct)}">${pct(r.pnlPct, 1, true)}</td>
+    <td class="num ${cls(r.dayPct)}">${pct(r.dayPct, 2, true)}</td></tr>`).join('') +
+    `<tr><td>Cash (USD)</td><td class="mono">USD</td><td>Cash</td><td></td><td></td><td></td><td class="num">${usd(v.cash)}</td><td class="num">${pct(v.cash / s.total, 1)}</td><td></td><td></td><td></td></tr>`;
+  document.getElementById('holdFoot').innerHTML = `<tr><td>Total</td><td></td><td></td><td></td><td></td><td></td><td class="num">${usd(s.total)}</td><td class="num">100.0%</td><td class="num ${cls(s.unreal)}">${sUsd(s.unreal)}</td><td></td><td class="num ${cls(s.dayPct)}">${pct(s.dayPct, 2, true)}</td></tr>`;
+}
+function renderTrades() {
+  document.getElementById('tradeBody').innerHTML = book().trades.map((t) => `<tr><td>${t.date}</td><td><b>${t.side}</b></td><td class="mono">${esc(t.ticker)}</td><td>${t.type}</td>
+    <td class="num">${num(t.qty)}</td><td class="num">${pxFmt(t.price)}</td><td class="num">${usd(unitValue(t.type, t.qty, t.price))}</td><td>${t.status}</td></tr>`).join('');
+}
+
+function renderValues(flash) {
+  const v = view(current.id), s = summarise(v);
+  renderKpis(s, v); renderLive(flash); renderAlloc(s); renderHoldings(s, v); updateListValues(); renderTicketLive();
+}
+function renderAll(full) {
+  if (full) { renderTitle(); renderHoldHead(); }
+  renderValues(false); renderOrders(); renderLog(); renderTrades();
+}
+
+document.getElementById('filters').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-r]'); if (!b) return;
+  risk = b.dataset.r;
+  if (risk !== 'All' && current.risk !== risk) { const f = PORTFOLIOS.find((p) => p.risk === risk); if (f) { select(f.id); return; } }
+  renderList();
+});
+document.getElementById('plist').addEventListener('click', (e) => { const b = e.target.closest('button[data-id]'); if (b) select(b.dataset.id); });
+document.getElementById('search').addEventListener('input', (e) => { query = e.target.value; renderList(); });
+document.getElementById('holdHead').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-k]'); if (!b) return;
+  const k = b.dataset.k;
+  if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = ['name', 'ticker', 'type'].includes(k) ? 1 : -1; }
+  renderHoldHead(); const v = view(current.id); renderHoldings(summarise(v), v);
+  document.querySelector(`#holdHead button[data-k="${k}"]`).focus();
+});
+document.getElementById('pauseBtn').addEventListener('click', (e) => {
+  paused = !paused;
+  e.target.textContent = paused ? 'Resume' : 'Pause';
+  e.target.setAttribute('aria-pressed', paused);
+  const dot = document.getElementById('liveDot');
+  dot.classList.toggle('paused', paused); dot.textContent = paused ? 'Paused · simulated feed' : 'Live · simulated feed';
+  renderLive(false);
+});
+document.getElementById('liveBody').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-trade]'); if (!b) return;
+  const m = MKT[b.dataset.t], q = quote(m);
+  ticket = { ...ticket, side: b.dataset.trade, ticker: b.dataset.t, review: false, error: '', limit: (b.dataset.trade === 'Buy' ? q.bid : q.ask).toFixed(2) };
+  renderTicket();
+  document.getElementById('tkQty').focus();
+});
+document.getElementById('orderBody').addEventListener('click', (e) => { const b = e.target.closest('button[data-cancel]'); if (b) cancelOrder(b.dataset.cancel); });
+document.getElementById('resetDemo').addEventListener('click', () => {
+  BOOK = freshBook(); saveBook(); select(current.id); toast('Demo data reset');
+});
+
+const tk = document.getElementById('ticket');
+tk.addEventListener('click', (e) => {
+  const sb = e.target.closest('#tkSide button'), tb = e.target.closest('#tkType button');
+  if (sb || tb) {
+    if (sb) ticket.side = sb.dataset.v;
+    if (tb) ticket.type = tb.dataset.v;
+    if (ticket.type === 'Limit' && !ticket.limit) { const q = quote(MKT[ticket.ticker]); ticket.limit = (ticket.side === 'Buy' ? q.bid : q.ask).toFixed(2); }
+    ticket.review = false; ticket.error = '';
+    renderTicket(); return;
+  }
+  if (e.target.id === 'tkReview') { ticket.error = validateTicket(); ticket.review = !ticket.error; renderTicketDynamic(); }
+  if (e.target.id === 'tkEdit') { ticket.review = false; renderTicketDynamic(); }
+});
+tk.addEventListener('input', (e) => {
+  if (e.target.id === 'tkQty') ticket.qty = e.target.value;
+  if (e.target.id === 'tkLimit') ticket.limit = e.target.value;
+  ticket.review = false; ticket.error = '';
+  renderTicketDynamic();
+});
+tk.addEventListener('change', (e) => {
+  if (e.target.id === 'tkTicker') {
+    ticket.ticker = e.target.value; ticket.review = false; ticket.error = '';
+    if (ticket.type === 'Limit') { const q = quote(MKT[ticket.ticker]); ticket.limit = (ticket.side === 'Buy' ? q.bid : q.ask).toFixed(2); document.getElementById('tkLimit').value = ticket.limit; }
+    renderTicketDynamic();
+  }
+  if (e.target.id === 'tkTif') ticket.tif = e.target.value;
+});
+tk.addEventListener('submit', (e) => {
+  e.preventDefault();
+  ticket.error = validateTicket();
+  if (ticket.error) { ticket.review = false; renderTicketDynamic(); return; }
+  submitOrder();
+  toast(`${ticket.side} ${num(Number(ticket.qty))} ${ticket.ticker} ${ticket.type} order sent`);
+  ticket.qty = ''; ticket.review = false;
+  document.getElementById('tkQty').value = '';
+  renderTicketDynamic();
+});
+
+BOOK.portfolios && Object.values(BOOK.portfolios).forEach((b) => b.orders.forEach((o) => {
+  if (o.status === 'Pending New' || o.status === 'Pending Cancel') o.status = o.status === 'Pending New' ? 'Rejected' : 'Cancelled';
+  if (o.type === 'Market' && ['New', 'Partially Filled'].includes(o.status)) { o.status = 'Cancelled'; }
+}));
+
+select(current.id);
+setInterval(() => {
+  if (paused) return;
+  tickMarket();
+  checkLimitOrders();
+  renderValues(true);
+}, TICK_MS);
+</script>
+</body>
+</html>
