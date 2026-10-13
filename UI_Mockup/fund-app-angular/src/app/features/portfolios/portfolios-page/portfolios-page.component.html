@@ -1,0 +1,30 @@
+<app-header />
+<main>
+  <div class="layout">
+    <aside>
+      <app-portfolio-list />
+    </aside>
+
+    <section class="content stack">
+      <app-portfolio-title-bar />
+      <app-kpi-tiles />
+      <app-live-prices />
+
+      <div class="trade-row">
+        <app-order-entry />
+        <div class="stack">
+          <app-orders />
+          <app-execution-log />
+        </div>
+      </div>
+
+      <div class="grid2">
+        <app-asset-allocation />
+        <app-pnl-by-asset-class />
+      </div>
+
+      <app-holdings />
+      <app-recent-trades />
+    </section>
+  </div>
+</main>

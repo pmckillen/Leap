@@ -1,0 +1,15 @@
+<header id="app-header">
+  <div class="logo">[APP LOGO]</div>
+  <nav>
+    <a routerLink="/portfolios" routerLinkActive="active" ariaCurrentWhenActive="page">Portfolios</a>
+    <a routerLink="/analytics" routerLinkActive="active" ariaCurrentWhenActive="page">Analytics</a>
+  </nav>
+  <div class="user">
+    <div class="avatar">{{ auth.username()?.charAt(0)?.toUpperCase() }}</div>
+    <div class="who">
+      <span>{{ auth.username() }}</span>
+      <small>Fund manager</small>
+    </div>
+    <a href="" (click)="$event.preventDefault(); signOut()">Sign out</a>
+  </div>
+</header>

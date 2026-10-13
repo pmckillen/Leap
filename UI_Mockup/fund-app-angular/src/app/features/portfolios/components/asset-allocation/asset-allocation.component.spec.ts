@@ -1,0 +1,21 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AssetAllocationComponent } from './asset-allocation.component';
+
+describe('AssetAllocationComponent', () => {
+  let component: AssetAllocationComponent;
+  let fixture: ComponentFixture<AssetAllocationComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [AssetAllocationComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(AssetAllocationComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
